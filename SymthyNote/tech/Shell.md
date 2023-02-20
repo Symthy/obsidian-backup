@@ -1,0 +1,7 @@
+
+
+
+```dataview
+LIST FROM #shell 
+````
+
