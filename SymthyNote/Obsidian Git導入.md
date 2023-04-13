@@ -182,3 +182,5 @@ Author設定
     プラグイン自体の無効化。
 -   Donate  
     寄付。
+
+#Obsidian
