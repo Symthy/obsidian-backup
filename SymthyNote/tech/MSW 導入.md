@@ -1,4 +1,6 @@
 
+MSWとは
+- ネットワークレベルで API リクエストをインターセプトして mock のデータを返すためのライブラリ
 
 ```
 npm -i -D msw
@@ -98,6 +100,7 @@ ref:
 - [Mock Service Worker: GETTING STARED](https://mswjs.io/docs/getting-started)
 - [React に MSW を導入する手順](https://zenn.dev/higuchimakoto/articles/d9865193910046)
 - [react+vite を playwright+msw で自動テストする](https://zenn.dev/dyoshikawa/articles/07ab82a5cbcde0)
+- [Mock Service Worker で開発用のモックAPIを作る](https://zenn.dev/ryo_kawamata/articles/mock-api-server-with-msw)
 
 ## GraphQL
 
