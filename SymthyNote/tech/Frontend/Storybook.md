@@ -3,55 +3,119 @@
 
 Viteの場合
 ```
+npm install @storybook/builder-vite --save-dev
 npx storybook init --builder @storybook/builder-vite
 ```
+
+### v7 VUP
+
+```sh
+npx storybook upgrade
+```
+
+ref: [遂に来た！Storybookのバージョンを7にするまでに行ったこと](https://qiita.com/KokiSakano/items/a6e291b6292f025bd037)
+
+※ 起動しようとしたら
+```
+$ npm run storybook
+
+ERR! Error: Invalid value of '@storybook/react' in the 'framework' field of Storybook config.
+ERR!
+ERR! Please run 'npx storybook@next automigrate' to automatically fix your config.
+```
+と出たので、以下も実行したらうまくいった
+```sh
+npx storybook@next automigrate
+```
+
+v7 は cli を別途インストール要
+```sh
+npm i -D @storybook/cli
+```
+
+```diff
+  "scripts": {
+-    "storybook": "start-storybook -p 6006",
+-    "build-storybook": "build-storybook",
++    "storybook": "storybook dev -p 6006",
++    "build-storybook": "storybook build",
+  }
+```
+
+※start-storybook と build-storybook は v7で削除された
+
+ref: https://github.com/storybookjs/storybook/blob/4a532ec8d8922ddf6b7a7e1cc68d88b35377b0a6/MIGRATION.md#from-version-65x-to-700
+
+
 
 ref:
 - [Vite + React + TypeScript に Vite 用 Storybook を導入する。Storybook は必要だぞ](https://zenn.dev/longbridge/articles/13e65ef71455e4)
 
-### main.ts の設定
+### Decorators
 
-```typescript
-import { fileURLToPath } from 'node:url';
-import path from 'node:path';
-  
-export default {
-  stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
-  addons: [
-    '@storybook/addon-links',
-    '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
-    '@storybook/addon-a11y'
-  ],
-  framework: '@storybook/react',
-  core: {
-    builder: '@storybook/builder-vite'
-  },
-  features: {
-    storyStoreV7: true,
-    interactionsDebugger: true
-  },
-  
-  // vite.config.ts 再利用うまくいかなかったため直接指定
-  viteFinal: async (config) => {
-    const __dirname = path.dirname(fileURLToPath(import.meta.url));
-    config.resolve.alias = {
-      ...(config.resolve.alias || {}),
-      src: path.resolve(__dirname, '../src')
-    };
-    return config;
-  }
-};
-```
+- 追加の「レンダリング」機能でストーリーをラップする方法
+- preview.ts に設定
 
-参考: [storybook 起動ファイル .main.js の設定](https://zenn.dev/longbridge/articles/13e65ef71455e4#storybook-%E8%B5%B7%E5%8B%95%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB-.main.js-%E3%81%AE%E8%A8%AD%E5%AE%9A)
+ref: 
+- https://storybook.js.org/docs/react/writing-stories/decorators
 
-### MSW
+
+### MSW 設定
 
 [[MSW 導入#セットアップ]]
 
+```typescript
+// preview.ts
+import { initialize, mswDecorator } from 'msw-storybook-addon';
+// :
+initialize(); 
+// :
+export const decorators = [mswDecorator, myDecorator];
+// :
 
+export const parameters = {
+  // :
+  msw: {
+    handlers: {
+      // 例
+      prefectures: mockPrefecturesApiHandler,
+      populations: mockPopulationsApiHandler
+    }
+  },
+  // :
+};
+```
 
+### emotion 設定
+
+storybook に builder-vite を適応して Emotionでスタイリングする際に下記のような文言が className に表示される。 以下の対応が必要
+
+```typescript
+// main.ts
+import react from '@vitejs/plugin-react';
+// :
+viteFinal: async (config) => {
+  // :
+  config.plugins = config.plugins.filter(
+    (plugin) => !(Array.isArray(plugin) && plugin[0]?.name.includes('vite:react'))
+  );
+  config.plugins.push(
+    react({
+  	  exclude: [/\.stories\.(t|j)sx?$/, /node_modules/],
+      jsxImportSource: '@emotion/react',
+      babel: {
+        plugins: ['@emotion/babel-plugin']
+     }
+    })
+  );
+  // :
+  return config
+}
+```
+
+ref: 
+- [vite + emotion + storybook で emotion が適応されなくて困ったさん](https://zenn.dev/rabbit/scraps/e9ab3527f49d45)
+- [Github Issue: Using the css Prop of @emotion/react and apply babel plugin](https://chot-inc.com/blog/gmwju-vx95/)
 
 ### トラブルシュート
 
@@ -95,6 +159,139 @@ If you do want to externalize this module explicitly add it to
     return config;
   },
 ```
+
+以下で vite.config.ts 読み込めるかもしれない。参考: 
+- [storybook 起動ファイル .main.js の設定](https://zenn.dev/longbridge/articles/13e65ef71455e4#storybook-%E8%B5%B7%E5%8B%95%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB-.main.js-%E3%81%AE%E8%A8%AD%E5%AE%9A)
+- https://github.com/storybookjs/builder-vite/issues/85#issuecomment-900831050
+
+```typescript
+const { loadConfigFromFile, mergeConfig } = require("vite");
+
+module.exports = {
+	...
+  async viteFinal(config, { configType }) {
+    const { config: userConfig } = await loadConfigFromFile(
+      path.resolve(__dirname, "../vite.config.ts"),
+    );
+
+    return mergeConfig(config, {
+      ...userConfig,
+      // manually specify plugins to avoid conflict
+      plugins: [],
+    });
+  },
+};
+```
+
+### 設定サンプル
+
+#### main.ts の設定
+
+```typescript
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+import react from '@vitejs/plugin-react';
+  
+export default {
+  stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
+  addons: [
+    '@storybook/addon-links',
+    '@storybook/addon-essentials',
+    '@storybook/addon-interactions',
+    '@storybook/addon-a11y'
+  ],
+  framework: '@storybook/react',
+  core: {
+    builder: '@storybook/builder-vite'
+  },
+  features: {
+    storyStoreV7: true,
+    interactionsDebugger: true
+  },
+  staticDirs: ['../public'], // msw用 ref: https://zenn.dev/midorimici/articles/msw-storybook#storybook-%E3%81%AE-static-directory-%E3%82%92%E6%8C%87%E5%AE%9A
+  
+  viteFinal: async (config) => {
+    // vite.config.ts 再利用うまくいかなかったため直接指定
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      src: path.resolve(__dirname, '../src'),
+      public: path.resolve(__dirname, '../public')
+    };
+
+    // ref: https://zenn.dev/rabbit/scraps/e9ab3527f49d45
+    // ref: https://chot-inc.com/blog/gmwju-vx95/
+    config.plugins = config.plugins.filter(
+      (plugin) => !(Array.isArray(plugin) && plugin[0]?.name.includes('vite:react'))
+    );
+    config.plugins.push(
+      react({
+        exclude: [/\.stories\.(t|j)sx?$/, /node_modules/],
+        jsxImportSource: '@emotion/react',
+        babel: {
+          plugins: ['@emotion/babel-plugin']
+        }
+      })
+    );
+    config.esbuild = {
+      // Fixed: [vite] warning: Top-level "this" will be replaced with undefined since this file is an ECMAScript module
+      // https://github.com/vitejs/vite/issues/8644
+      logOverride: { 'this-is-undefined-in-esm': 'silent' }
+    };
+    
+    return config;
+  }
+};
+```
+
+#### preview.tsx の設定
+
+```typescript
+// Registers the msw addon
+import { initialize, mswDecorator } from 'msw-storybook-addon';
+import React from 'react';
+import { mockPopulationsApiHandler, mockPrefecturesApiHandler } from '../src/mocks/handlers';
+import { GlobalStyles } from '../src/libs/global-style'; // 独自のグローバルCSSスタイル
+
+// Initialize MSW
+initialize(); // setup はする必要なし
+
+const commonDecorator = (StoryFn: Function) => {
+  return (
+    <>
+      <StoryFn />
+      <GlobalStyles />
+    </>
+  );
+};
+  
+// Provide the MSW addon decorator globally
+export const decorators = [mswDecorator, commonDecorator];
+export const parameters = {
+  actions: { argTypesRegex: '^on[A-Z].*' },
+  controls: {
+    matchers: {
+      color: /(background|color)$/i,
+      date: /Date$/
+    }
+  },
+  msw: {
+    handlers: {
+      // 例
+      prefectures: mockPrefecturesApiHandler,
+      populations: mockPopulationsApiHandler
+    }
+  },
+  // occur 'ReferenceError: process is not defined' in Chromatic...
+  process: {
+    env: {
+      // 例
+      VITE_E2E_MODE: false
+    }
+  }
+};
+```
+
 
 
 ### storybook test 
@@ -159,6 +356,27 @@ export const Index: ComponentStoryObj<typeof SimpleForm> = {
   args: {
     title: 'お名前フォーム'
   }
+};
+```
+
+※ v7 では以下に変更
+- `ComponentStory`、`ComponentStoryObj`、`ComponentStoryFn`、`ComponentMeta` は非推奨
+- 代わりに、`Meta`、`StoryObj`、`StoryFn`を利用
+```typescript
+import type { Meta, StoryObj } from '@storybook/react';
+
+import { Button } from './Button';
+
+const meta: Meta<typeof Button> = {
+  title: 'Button',
+  component: Button,
+};
+
+export default meta;
+type Story = StoryObj<typeof Button>;
+
+export const Primary: Story = {
+  render: () => <Button primary label="Button" />,
 };
 ```
 
