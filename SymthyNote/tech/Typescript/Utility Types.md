@@ -1,4 +1,25 @@
 
+ref: 
+- [Typescript utility types that you must know](https://dev.to/arafat4693/typescript-utility-types-that-you-must-know-4m6k)
+	-   [Partial](https://dev.to/arafat4693/typescript-utility-types-that-you-must-know-4m6k#partial)
+	-   [Required](https://dev.to/arafat4693/typescript-utility-types-that-you-must-know-4m6k#required)
+	-   [Omit](https://dev.to/arafat4693/typescript-utility-types-that-you-must-know-4m6k#omit)
+	-   [Pick](https://dev.to/arafat4693/typescript-utility-types-that-you-must-know-4m6k#pick)
+	-   [Multiple utility types together](https://dev.to/arafat4693/typescript-utility-types-that-you-must-know-4m6k#multiple-utility-types-together)
+	-   [Readonly](https://dev.to/arafat4693/typescript-utility-types-that-you-must-know-4m6k#readonly)
+	-   [Mutable](https://dev.to/arafat4693/typescript-utility-types-that-you-must-know-4m6k#mutable)
+	-   [Exclude](https://dev.to/arafat4693/typescript-utility-types-that-you-must-know-4m6k#exclude)
+	-   [Extract](https://dev.to/arafat4693/typescript-utility-types-that-you-must-know-4m6k#extract)
+	-   [ReturnType](https://dev.to/arafat4693/typescript-utility-types-that-you-must-know-4m6k#returntype)
+	-   [Parameters](https://dev.to/arafat4693/typescript-utility-types-that-you-must-know-4m6k#parameters)
+	-   [NonNullable](https://dev.to/arafat4693/typescript-utility-types-that-you-must-know-4m6k#nonnullable)
+	-   [Awaited](https://dev.to/arafat4693/typescript-utility-types-that-you-must-know-4m6k#awaited)
+	-   [Awaited and ReturnType combined](https://dev.to/arafat4693/typescript-utility-types-that-you-must-know-4m6k#awaited-and-returntype-combined)
+	-   [Conclusion](https://dev.to/arafat4693/typescript-utility-types-that-you-must-know-4m6k#conclusion)
+
+
+# 主要なもの
+
 ## Required
 
 
