@@ -1,4 +1,6 @@
 
+## 構築
+
 参考： [Google App Engine（GAE）とは 概要や機能、活用事例を5分で入門](https://cloud-ace.jp/column/detail251/)
 
 作成
@@ -80,5 +82,79 @@ Some things to try next:
 C:\Users\sympa\AppData\Local\Google\Cloud SDK>
 ```
 
+### クイックスタート(Go +1.12)
 
+サンプルデプロイ
 https://cloud.google.com/appengine/docs/standard/go/create-app?hl=ja
+
+
+インストール
+gcloud components install app-engine-go
+![[Pasted image 20230618151554.png]]
+
+gcloud app deploy 実行
+```sh
+D:\dev_git\work\golang-samples\appengine\go11x\helloworld>gcloud app deploy
+You are creating an app for project [intense-guru-390109].
+WARNING: Creating an App Engine application for a project is irreversible and the region
+cannot be changed. More information about regions is at
+<https://cloud.google.com/appengine/docs/locations>.
+
+Please choose the region where you want your App Engine application located:
+＜リージョン選択省略＞
+
+Creating App Engine application in project [intense-guru-390109] and region [asia-northeast1]....done.
+Services to deploy:
+
+descriptor:                  [D:\dev_git\work\golang-samples\appengine\go11x\helloworld\app.yaml]
+source:                      [D:\dev_git\work\golang-samples\appengine\go11x\helloworld]
+target project:              [intense-guru-390109]
+target service:              [default]
+target version:              [20230618t152323]
+target url:                  [https://intense-guru-390109.an.r.appspot.com]
+target service account:      [intense-guru-390109@appspot.gserviceaccount.com]
+
+
+Do you want to continue (Y/n)?  Y
+
+Beginning deployment of service [default]...
+Created .gcloudignore file. See `gcloud topic gcloudignore` for details.
+╔════════════════════════════════════════════════════════════╗
+╠═ Uploading 6 files to Google Cloud Storage                ═╣
+╚════════════════════════════════════════════════════════════╝
+File upload done.
+Updating service [default]...done.
+Setting traffic split for service [default]...done.
+Deployed service [default] to [https://intense-guru-390109.an.r.appspot.com]
+
+You can stream logs from the command line by running:
+  $ gcloud app logs tail -s default
+
+To view your application in the web browser run:
+  $ gcloud app browse
+```
+
+アプリ開発の基本的な流れ
+https://cloud.google.com/appengine/docs/standard/go/building-app?hl=ja
+
+
+
+## ログ
+
+https://cloud.google.com/logging/docs/setup/go?hl=ja
+
+
+## app.yaml 設定
+
+- [App Engine Scaling Config](https://qiita.com/sinmetal/items/017e7aa395ff459fca7c)
+
+## 実装
+
+urlfetchは古い。使わずとも外部APIと通信できる
+-  [GAE/Go の urlfetch のタイムアウトを設定する](https://www.pospome.work/entry/2017/12/17/112144)
+
+GCS から取得
+- [GCSから取得する時](https://ema-hiro.hatenablog.com/entry/2018/04/20/011427)
+
+GCSへアップロード
+https://cloud.google.com/storage/docs/streaming-uploads?hl=ja#storage-stream-upload-object-go
