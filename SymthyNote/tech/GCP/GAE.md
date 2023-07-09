@@ -1,21 +1,32 @@
 
 ## 構築
 
-参考： [Google App Engine（GAE）とは 概要や機能、活用事例を5分で入門](https://cloud-ace.jp/column/detail251/)
 
-作成
+- [公式ドキュメント - App Engine で Go アプリをビルドする](https://cloud.google.com/appengine/docs/standard/go/building-app?hl=ja#local-machine)
+- [Google App Engine（GAE）とは 概要や機能、活用事例を5分で入門](https://cloud-ace.jp/column/detail251/)
+
+
+アプリ開発の基本的な流れ（Golang）
+https://cloud.google.com/appengine/docs/standard/go/building-app?hl=ja
+
+プロジェクトセレクタ
+- アプリ作成
 ![[Pasted image 20230617190029.png]]
 
-Googole Cloud SDK 入手して、自PCで設定？実施
+Googole Cloud SDK 入手して、自PCで設定要
 ![[Pasted image 20230617190245.png]]
 
-Google CLOUD SDK インストール
+先にgcloud CLI インストール
+https://cloud.google.com/sdk/docs/install?hl=ja
+
+Googole Cloud SDK のインストールは以下参照
 https://cloud.google.com/sdk/docs/install-sdk?hl=ja
-Windowsの場合
+
+※Windowsの場合
 - インストーラをダウンロードするか
 - PowerShell でコマンド実行するか
 
-インストール完了して、run gclound init にチェック付けたら色々聞かれた
+PowerShellの場合。インストール完了して、run gclound init にチェック付けたら色々聞かれた
 
 ```
 Welcome to the Google Cloud CLI! Run "gcloud -h" to get the list of available commands.
@@ -36,9 +47,7 @@ You must log in to continue. Would you like to log in (Y/n)?  Y
 
 Your browser has been opened to visit:
 
-    https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=32555940559.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A8085%2F&scope=openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fappengine.admin+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fsqlservice.login+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcompute+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Faccounts.reauth&state=psjQJqnLIC7YV4CdhkvzZ4ti6iHMiQ&access_type=offline&code_challenge=SDc-KKA0OVrOgyuBAqeSy1zXKnQqfNjlqQ9_ankus8A&code_challenge_method=S256
-
-You are logged in as: [sympathia3104@gmail.com].
+  <省略>
 
 Pick cloud project to use:
  [1] dependable-aloe-252213
@@ -82,13 +91,15 @@ Some things to try next:
 C:\Users\sympa\AppData\Local\Google\Cloud SDK>
 ```
 
+デプロイ： gcloud app deploy
+ブラウザ起動：gcloud app browse
+
 ### クイックスタート(Go +1.12)
 
 サンプルデプロイ
 https://cloud.google.com/appengine/docs/standard/go/create-app?hl=ja
 
-
-インストール
+Go 1.12+ 用の App Engine 拡張機能を含む [gcloud コンポーネント](https://cloud.google.com/sdk/docs/managing-components?hl=ja)をインストール
 gcloud components install app-engine-go
 ![[Pasted image 20230618151554.png]]
 
@@ -134,27 +145,68 @@ To view your application in the web browser run:
   $ gcloud app browse
 ```
 
-アプリ開発の基本的な流れ
-https://cloud.google.com/appengine/docs/standard/go/building-app?hl=ja
+ローカルでのログ監視
+```
+gcloud app logs tail -s default
+```
 
 
-
-## ログ
-
-https://cloud.google.com/logging/docs/setup/go?hl=ja
 
 
 ## app.yaml 設定
 
-- [App Engine Scaling Config](https://qiita.com/sinmetal/items/017e7aa395ff459fca7c)
+- 設定項目まとめ： [App Engine Scaling Config](https://qiita.com/sinmetal/items/017e7aa395ff459fca7c)
+
+名前を指定可能。名前を省略すると、`default` として扱われる
 
 ## 実装
 
-urlfetchは古い。使わずとも外部APIと通信できる
+urlfetchは古い。v2で使わずとも外部APIと通信できるようになっているため不要
 -  [GAE/Go の urlfetch のタイムアウトを設定する](https://www.pospome.work/entry/2017/12/17/112144)
+- [GAE/Go urlfetch.ClientでGetしたらタイムアウトエラー「urlfetch: DEADLINE_EXCEEDED」の解決方法](https://qiita.com/hirocueki2/items/56065f3ab46bf455253e)
+
+### GCS
+
+公式ドキュメント： https://cloud.google.com/appengine/docs/standard/using-cloud-storage?hl=ja&tab=go#go
 
 GCS から取得
 - [GCSから取得する時](https://ema-hiro.hatenablog.com/entry/2018/04/20/011427)
+- [GCSに保存してあるデータを取得する](https://ema-hiro.hatenablog.com/entry/2018/04/20/011427)
+
+```go
+func main() {
+    ctx := context.Background()
+    clinet, err := storage.NewClient(ctx)
+    if err != nil {
+        log.Fatal(err)
+    }
+	reader, err := clinet.Bucket(constants.GCS_BUCKET_NAME).Object("ファイル名").NewReader(ctx)  // 戻り値: io.Reader
+    if err != nil {
+        log.Fatal(err)
+    }
+    // :
+}
+```
+
+
 
 GCSへアップロード
 https://cloud.google.com/storage/docs/streaming-uploads?hl=ja#storage-stream-upload-object-go
+
+GCSのオブジェクト削除
+https://cloud.google.com/storage/docs/deleting-objects?hl=ja
+
+### ログ出力
+
+- https://cloud.google.com/logging/docs/setup/go?hl=ja
+- https://cloud.google.com/appengine/docs/standard/go/writing-application-logs?hl=ja
+- [GAE で Stackdriver Logging にログを拾わせてトレースしたい](https://scrapbox.io/pokutuna/GAE_%E3%81%A7_Stackdriver_Logging_%E3%81%AB%E3%83%AD%E3%82%B0%E3%82%92%E6%8B%BE%E3%82%8F%E3%81%9B%E3%81%A6%E3%83%88%E3%83%AC%E3%83%BC%E3%82%B9%E3%81%97%E3%81%9F%E3%81%84)
+- [GCPで理想の構造化ログを出力する方法](https://zenn.dev/glassonion1/articles/c58505bf594868)
+
+### その他参考になりそうなもの
+
+- [gcloudでプロジェクトを切り替える](https://zenn.dev/taka_baya/articles/ef12fe9a043560)
+- [Go+chi+GAEでクリーンアーキテクチャを試してみた](https://rinoguchi.net/2022/08/go-crean-achitecure.html)
+- [超簡単 Google App Engineで始めるWebアプリケーション 〜リクエスト分割機能がすごかった〜](https://dev.classmethod.jp/articles/gae-webapp/#toc-1)  2019
+- [Google App Engine (GAE) チュートリアル – GAE 機能確認編](https://cloud-textbook.com/2804/#i-7)  2019
+- [【GCP】AppEngineにGolangアプリをデプロイしちゃうぞ【DockerとCloudSQLもあるよ】](https://zenn.dev/chillout2san/articles/c7b1bd4feb8800) 2022
