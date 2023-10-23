@@ -1,4 +1,8 @@
 
+## 確認
+
+## 作成
+
 共通手順（秘密鍵とcsr:証明書署名要求 作成）
 ```
 openssl genrsa -out server.key 2048
