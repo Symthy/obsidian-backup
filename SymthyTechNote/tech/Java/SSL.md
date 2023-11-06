@@ -12,7 +12,7 @@ public static build(int connectionTimeoutInMills, int socketTimeoutInMills) {
       .setSSLSocketFactory(
           new SSLConnectionSocketFactory((SSLSocketFactory) SSLSocketFactory.getDefault(),
               new DefaultHostnameVerifier());
-  if (!isCertVefiryEnabled) {
+  if (!isCertVefiry) {
     builder.setSSLSocketFactory(null)
         .setSSLHostnameVerifier(new NoopHostnameVerifier())
         .setSSLContext(createSSLContext());
@@ -29,5 +29,5 @@ private static SSLContext createSSLContext() {
     return null;
   }
 }
-
 ```
+
