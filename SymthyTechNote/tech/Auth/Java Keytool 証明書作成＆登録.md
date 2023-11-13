@@ -30,3 +30,8 @@ keystore内の証明書確認
 ```sh
 openssl pkcs12 -in <keystore_path> -nodes -passin pass:changeit | openssl x509 -noout -fingerprint -text
 ```
+
+※ JKS から PEM形式の証明書(X.509) に変換するには
+JKS → PKCS12 → PEM に変換が必要
+
+[Javaのkeytoolのキーストア（JKS）からPEM形式の証明書、秘密鍵に変換する方法](https://qiita.com/yasushi-jp/items/4aa690fbde11841686e5)
