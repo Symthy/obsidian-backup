@@ -110,3 +110,5 @@ select ename,sal,job,comm
 	from employee
 order by case when job = 'SALESMAN' then comm else sal end
 ```
+
+#SQL 
