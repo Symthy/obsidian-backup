@@ -21,7 +21,7 @@ ext.fromRootDirectory = {
 sourceCompatibility = 1.11
 
 allprojects {
-  apply from: projectRoot.resolve("ossVersionDef.gradle")
+  apply from: projectRoot.resolve("ossVersions.gradle")
   def aProject = it
   repositories {
     apply from: rootDir.toPath().resolve('buildConfig.gradle').toString()
@@ -123,25 +123,11 @@ allprojects {
   }
 }
 
-// 実行
-def testRuntimeDirectory = projectRoot.resolve("test").resolve("runtime").toAbsolutePath()
-task execute(type: JavaExec, dependsOn: [build]) {
-  mainClass = "xxx"
-  classpath = sourceSets.main.runtimeClasspath
-  args("xxx", "xxx")
-  environment("key", "value")
-  jvmArgs("-Xms4G", "-Xmx10G", "-Duser.language=en", "-Duser.country=US"
-    "-DlogDir=" + (findProperty("logDir") ?: "/path"),
-    "-Xlog:gc:file=/path/xxx.log:time,uptime,pid:filecount=10,filesize=1024k",
-    "-Dmy.product.config.execution.result.dir=${testRuntimeDirectory.resolve("result")},
-    "-Djdk.tls.client.protocols=\"TLSv1.2\"")
-}
-
-task copyPropertiesForDeveloper() {
+task copyProperties() {
   doLast {
     copy {
       from "./release_static_files/config/"
-      into "./execution/config/"
+      into "./config/"
       include "system.properties"
       include "user.properties"
       rename(/user.properties/, "user.properties.model")
@@ -265,7 +251,21 @@ task tarBall(type: Tar, dependsOn: [release, cleanTarBall]) {
   from releaseDir
   destinationDirectory = file('.')
 }
+```
 
+```
+def testRuntimeDirectory = projectRoot.resolve("test").resolve("runtime").toAbsolutePath()
+task execute(type: JavaExec, dependsOn: [build]) {
+  mainClass = "xxx"
+  classpath = sourceSets.main.runtimeClasspath
+  args("xxx", "xxx")
+  environment("key", "value")
+  jvmArgs("-Xms2G", "-Xmx10G", "-Duser.language=en", "-Duser.country=US"
+    "-DlogDir=" + (findProperty("logDir") ?: "/path"),
+    "-Xlog:gc:file=/path/xxx.log:time,uptime,pid:filecount=10,filesize=1024k",
+    "-Dmy.product.config.execution.result.dir=${testRuntimeDirectory.resolve("result")},
+    "-Djdk.tls.client.protocols=\"TLSv1.2\"")
+}
 ```
 
 
@@ -290,8 +290,4 @@ ext {
       'lib_name': 'version'
     ]
 }
-```
-
-gradle_scripts/cofigureRepository.gradle
-```
 ```
