@@ -1,4 +1,4 @@
-
+by ChatGPT
 
 Ruby on Railsのビュー（View）に関する基本的な書き方を説明します。Railsのビューは、主にHTMLを生成するために使われ、`app/views` ディレクトリに配置されます。RailsはERB（Embedded Ruby）というテンプレートエンジンを使用して、RubyコードをHTMLに組み込むことができます。
 
