@@ -1,3 +1,5 @@
+公式ドキュメント：
+https://github.com/css-modules/css-modules
 
 ## ロードマップ
 

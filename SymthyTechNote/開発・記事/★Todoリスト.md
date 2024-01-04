@@ -16,7 +16,6 @@ kanban-plugin: basic
 
 ## 学習/記事執筆
 
-- [ ] 転職活動記
 - [ ] SQL
 - [ ] PHP
 - [ ] 良いコードを書くためのTips集
@@ -40,7 +39,6 @@ kanban-plugin: basic
 
 ## Week Target
 
-- [ ] CSS Modules
 
 
 ***
@@ -49,6 +47,8 @@ kanban-plugin: basic
 
 - [ ] ムクホークパーティ仕上げ
 - [ ] レイド自動システム構築
+- [ ] 転職活動記
+- [ ] CSS Modules
 
 %% kanban:settings
 ```
