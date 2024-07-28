@@ -29,9 +29,9 @@ type PickupCard = (hand: Hand, card: Card) => Hand  // 配られたカードを�
 
 関数で振る舞いを表現
 
-![[Pasted image 20230306211425.png]]
+![[images/Pasted image 20230306211425.png]]
 
-![[Pasted image 20230306211446.png]]
+![[images/Pasted image 20230306211446.png]]
 
 Domain エキスパートとの対話
 
@@ -61,7 +61,7 @@ type Shuffle = (deck: Deck) => ShuffledDeck
 
 特に関数の定義にネームスペースが必要な言語（Java）で、ドメイン駆動のモデリングを行おうとすると
 - 振る舞いを interface に含めるなど必要になり、そこ(interfaceでまとめなきゃいけない…) に引きずられる
- ![[Pasted image 20230306212718.png]]
+ ![[images/Pasted image 20230306212718.png]]
 
 それを取り除いて、メンタルモデルを共有するプロセスが重要 = DMMF
 
@@ -75,7 +75,7 @@ type Contact = {
   isEmailVerified: boolean;
 }
 ```
-![[Pasted image 20230306212956.png]]
+![[images/Pasted image 20230306212956.png]]
 ↓
 
 ```typescript
@@ -121,21 +121,21 @@ type String50 = z.infer<typeof String50>
 const String50 = z.string().min(1).max(1).brand("String1")
 type String1 = z.infer<typeof String50>
 ```
-![[Pasted image 20230306213915.png]]
+![[images/Pasted image 20230306213915.png]]
 
 フラグをUNIONに置き換える（別の型で定義する）
-![[Pasted image 20230306214051.png]]
+![[images/Pasted image 20230306214051.png]]
 
 ※ついていけなかった
 
 
 業務上の振る舞いの違いに着目する必要がある
 → 違うじゃんとなれば、型を分ける＝洗練する
-![[Pasted image 20230306214343.png]]
+![[images/Pasted image 20230306214343.png]]
 ※typescriptにはパターンマッチがないので、ts-match?を使ってそれっぽくしている
 
 
-![[Pasted image 20230306214557.png]]
+![[images/Pasted image 20230306214557.png]]
 さっきのパターンマッチもいらなくなる
 
 ## Totality（全域性）
@@ -157,7 +157,7 @@ export const divide: Divide = (a, b) => {
 // 方式その３
 ```
 
-![[Pasted image 20230306215501.png]]
+![[images/Pasted image 20230306215501.png]]
 3点目は、型そのものが持つメリット
 
 #DDD 
